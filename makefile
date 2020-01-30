@@ -13,7 +13,7 @@ gcc.out: $(SRC)
 icpc.out: $(SRC)
 	icpc $(ICPCFLAGS) $^ -o $@
 
-run:
+run: gcc.out icpc.out
 	./gcc.out
 	./icpc.out
 
