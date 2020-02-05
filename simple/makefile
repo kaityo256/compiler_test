@@ -14,8 +14,8 @@ icpc.out: $(SRC)
 	icpc $(ICPCFLAGS) $^ -o $@
 
 run: gcc.out icpc.out
-	./gcc.out
-	./icpc.out
+	time ./gcc.out
+	time ./icpc.out
 
 clean:
 	rm -f gcc.out icpc.out
