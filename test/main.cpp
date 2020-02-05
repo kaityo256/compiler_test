@@ -3,6 +3,21 @@
 #include <chrono>
 #include <string>
 
+class myrand {
+  public:
+  uint32_t operator()() {
+    static uint32_t y = 2463534242;
+    y = y ^ (y << 13); y = y ^ (y >> 17);
+    return y = y ^ (y << 5);
+  }
+  uint32_t max(){
+    return std::mt19937::max();
+  }
+  uint32_t min(){
+    return 0;
+  }
+};
+
 // https://github.com/boostorg/random/blob/develop/include/boost/random/uniform_real_distribution.hpp
 double my_uniform_real(std::mt19937 &mt, double min_value, double max_value) {
   for(;;){
@@ -86,6 +101,19 @@ double run_subtract(void) {
   return r;
 }
 
+double run_myrand(void) {
+  myrand mt;
+  double r = 0.0;
+  std::uniform_real_distribution<> ud(-1.0, 1.0);
+  for (int j = 0; j <10000; j++) {
+    for (int i = 0; i < 10000; i++) {
+      if (i%2) r += ud(mt);
+    }
+  }
+  return r;
+}
+
+
 
 void measure(t_run run, std::string title){
   auto start = std::chrono::system_clock::now();
@@ -106,4 +134,5 @@ int main(){
   measure(run_int            , "mt       + int    + if");
   measure(run_without_if     , "mt       + real   - if");
   measure(run_my_distribution, "mt       + myreal + if");
+  measure(run_myrand,          "myrand   + real   + if");
 }
