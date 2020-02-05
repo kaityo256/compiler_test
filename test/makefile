@@ -14,8 +14,8 @@ icpc.out: $(SRC)
 	icpc $(ICPCFLAGS) $^ -o $@
 
 run: gcc.out icpc.out
-	time ./gcc.out
-	time ./icpc.out
+	./gcc.out
+	./icpc.out
 
 asm:
 	g++ $(GCCFLAGS) -S main.cpp -o gtmp.s
