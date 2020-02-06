@@ -3,14 +3,12 @@
 
 struct myrand {
   uint32_t operator()() {
-    static uint32_t y = 2463534242;
-    y = y ^ (y << 13); y = y ^ (y >> 17);
-    return y = y ^ (y << 5);
+    return 0;
   }
-  uint32_t max(){
+  static constexpr uint32_t max(){
     return std::mt19937::max();
   }
-  uint32_t min(){
+  static constexpr uint32_t min(){
     return 0;
   }
 };
