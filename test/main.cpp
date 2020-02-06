@@ -3,20 +3,37 @@
 #include <chrono>
 #include <string>
 
-class myrand {
+class xorshift {
   public:
   uint32_t operator()() {
     static uint32_t y = 2463534242;
     y = y ^ (y << 13); y = y ^ (y >> 17);
     return y = y ^ (y << 5);
   }
-  uint32_t max(){
+  static constexpr uint32_t max(){
     return std::mt19937::max();
   }
-  uint32_t min(){
+  static constexpr uint32_t min(){
     return 0;
   }
 };
+
+class always_zero {
+  public:
+  uint32_t operator()() {
+    static uint32_t y = 2463534242;
+    y = y ^ (y << 13); y = y ^ (y >> 17);
+    return y = y ^ (y << 5);
+  }
+  static constexpr uint32_t max(){
+    return std::mt19937::max();
+  }
+  static constexpr uint32_t min(){
+    return 0;
+  }
+};
+
+
 
 // https://github.com/boostorg/random/blob/develop/include/boost/random/uniform_real_distribution.hpp
 double my_uniform_real(std::mt19937 &mt, double min_value, double max_value) {
@@ -101,8 +118,20 @@ double run_subtract(void) {
   return r;
 }
 
-double run_myrand(void) {
-  myrand mt;
+double run_xorshift(void) {
+  xorshift mt;
+  double r = 0.0;
+  std::uniform_real_distribution<> ud(-1.0, 1.0);
+  for (int j = 0; j <10000; j++) {
+    for (int i = 0; i < 10000; i++) {
+      if (i%2) r += ud(mt);
+    }
+  }
+  return r;
+}
+
+double run_always_zero(void) {
+  always_zero mt;
   double r = 0.0;
   std::uniform_real_distribution<> ud(-1.0, 1.0);
   for (int j = 0; j <10000; j++) {
@@ -128,11 +157,14 @@ void measure(t_run run, std::string title){
 
 
 int main(){
-  measure(run                , "mt       + real   + if");
-  measure(run_linear         , "linear   + real   + if");
-  measure(run_subtract       , "subtract + real   + if");
-  measure(run_int            , "mt       + int    + if");
-  measure(run_without_if     , "mt       + real   - if");
-  measure(run_my_distribution, "mt       + myreal + if");
-  measure(run_myrand,          "myrand   + real   + if");
+  // slow
+  measure(run                , "mt          + real   + if");
+  measure(run_linear         , "linear      + real   + if");
+  measure(run_subtract       , "subtract    + real   + if");
+  measure(run_xorshift       , "xorshift    + real   + if");
+  measure(run_always_zero    , "always_zero + real   + if");
+  // fast
+  measure(run_int            , "mt          + int    + if");
+  measure(run_without_if     , "mt          + real   - if");
+  measure(run_my_distribution, "mt          + myreal + if");
 }
